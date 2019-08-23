@@ -1,0 +1,41 @@
+DATE:Fri Jan  2 21:18:30 UTC 1998
+name=1M_seqrw: (g=0): rw=rw, bs=1M-1M/1M-1M/1M-1M, ioengine=posixaio, iodepth=32
+...
+fio-2.14
+Starting 4 threads
+name=1M_seqrw: Laying out IO file(s) (1 file(s) / 24418932MB)
+
+name=1M_seqrw: (groupid=0, jobs=4): err= 0: pid=100879: Sun Jan  4 09:35:11 1998
+  read : io=1104.8GB, bw=321739KB/s, iops=314, runt=3600299msec
+    slat (usec): min=0, max=707, avg= 0.46, stdev= 4.04
+    clat (msec): min=48, max=10371, avg=223.98, stdev=106.05
+     lat (msec): min=48, max=10371, avg=223.98, stdev=106.05
+    clat percentiles (msec):
+     |  1.00th=[   86],  5.00th=[  105], 10.00th=[  120], 20.00th=[  143],
+     | 30.00th=[  165], 40.00th=[  188], 50.00th=[  212], 60.00th=[  235],
+     | 70.00th=[  260], 80.00th=[  289], 90.00th=[  338], 95.00th=[  388],
+     | 99.00th=[  529], 99.50th=[  594], 99.90th=[  840], 99.95th=[ 1020],
+     | 99.99th=[ 1352]
+  write: io=1105.6GB, bw=321844KB/s, iops=314, runt=3600299msec
+    slat (usec): min=14, max=17544, avg=106.33, stdev=99.07
+    clat (msec): min=41, max=10372, avg=181.35, stdev=88.49
+     lat (msec): min=41, max=10372, avg=181.46, stdev=88.49
+    clat percentiles (msec):
+     |  1.00th=[   78],  5.00th=[   92], 10.00th=[  102], 20.00th=[  120],
+     | 30.00th=[  137], 40.00th=[  155], 50.00th=[  174], 60.00th=[  190],
+     | 70.00th=[  208], 80.00th=[  231], 90.00th=[  265], 95.00th=[  297],
+     | 99.00th=[  424], 99.50th=[  498], 99.90th=[  660], 99.95th=[  791],
+     | 99.99th=[ 1205]
+    lat (msec) : 50=0.01%, 100=6.34%, 250=69.94%, 500=22.81%, 750=0.80%
+    lat (msec) : 1000=0.07%, 2000=0.03%, >=2000=0.01%
+  cpu          : usr=0.61%, sys=1.40%, ctx=34994996, majf=0, minf=4
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=72.6%, 32=27.3%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=93.7%, 8=4.5%, 16=1.7%, 32=0.1%, 64=0.0%, >=64=0.0%
+     issued    : total=r=1131207/w=1131578/d=0, short=r=0/w=0/d=0, drop=r=0/w=0/d=0
+     latency   : target=0, window=0, percentile=100.00%, depth=32
+
+Run status group 0 (all jobs):
+   READ: io=1104.8GB, aggrb=321738KB/s, minb=321738KB/s, maxb=321738KB/s, mint=3600299msec, maxt=3600299msec
+  WRITE: io=1105.6GB, aggrb=321844KB/s, minb=321844KB/s, maxb=321844KB/s, mint=3600299msec, maxt=3600299msec
+
