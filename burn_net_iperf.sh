@@ -7,9 +7,9 @@ RUN=1
 FAIL_COUNT=0
 MAX_FAIL_COUNT=10
 #IPERF_PATH="./iperf"
-IPERF_PATH="/tmp/burn/iperf"
+IPERF_PATH="/tmp/burn/iperf3"
 IPERF_TIME=21600 #1day=86400s
-IPERF_INTERVAL=3600
+IPERF_INTERVAL=60
 #IPERF_TIME=3600 #1day=86400s
 #IPERF_INTERVAL=180
 
@@ -28,33 +28,6 @@ fi
 ##################
 log_path=$(cat /tmp/log_path)
 net_log=$log_path/lan
-
-function check_iperf_connection {
-
-  local net_name=$1
-  local net_num=$2
-
-  while true
-  do
-    echo "=====IPERF ${net_name} IP: 192.168.${net_num}.${cb_id}====="
-    ${IPERF_PATH} -c 192.168.${net_num}.$cb_id -w 320K -i 1 -t 2 >> /tmp/iperf_${net_num}.log
-    iperf_result=$(cat /tmp/iperf_${net_num}.log)
-
-    if [ "${iperf_result}" != "" ]; then
-      echo "=====peer iperf server is connected====="
-      FAIL_COUNT=0
-      return
-    else
-      echo "=====${net_name} is disconnected, Save log====="
-      let "FAIL_COUNT=FAIL_COUNT+1"
-      if [ "${FAIL_COUNT}" -ge "${MAX_FAIL_COUNT}" ]; then
-        (echo "NET:$ {net_name} Iperf server is not ready..." >> /tmp/log/burn_crit_log.txt)
-      fi
-    fi
-
-    sleep 5
-  done
-}
 
 function check_connection {
 
@@ -154,12 +127,17 @@ function main {
   do
     (echo "=====Burn ${net_name}=====")
     (date >> $net_log/${net_name}_$RUN.log)
-    (${IPERF_PATH} -c 192.168.${net_num}.$cb_id -w 320K -i ${IPERF_INTERVAL} -t ${IPERF_TIME} -f m -P 3 >> $net_log/${net_name}_${RUN}.log )
+    (${IPERF_PATH} -c 192.168.${net_num}.$cb_id -i ${IPERF_INTERVAL} -t ${IPERF_TIME} -f m -P 3 >> $net_log/${net_name}_${RUN}.log )
     echo "DONE" >> $net_log/${net_name}_${RUN}.log
     (sleep 1)
     let "RUN=RUN+1"
 
     (check_connection ${net_name} ${net_num})
+
+    ## Iperf test only run 2 days, avoid to CPU busy
+    if [ "${RUN}" = "9" ]; then
+        return
+    fi
   done
 }
 

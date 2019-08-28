@@ -58,6 +58,9 @@ function main {
   ${BURN_NET_PROC_PATH} ixl1 1 &
   ${BURN_NET_PROC_PATH} ixl2 2 &
   ${BURN_NET_PROC_PATH} ixl3 3 &
+
+  ## Sleep 2 days for next net burn
+  sleep 172800
   ${BURN_NET_PROC_PATH} igb1 4 &
   ${BURN_NET_PROC_PATH} igb2 6 &
   ${BURN_NET_PROC_PATH} ntb0 5 &

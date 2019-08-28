@@ -19,7 +19,7 @@ cb_vpd_pass_flag=0
 bp_vpd_pass_flag=0
 bbu_learning_pass_flag=0
 ntb_pass_flag=0
-net_pass_flag=0
+net_pass_flag=1 ## default pass, if a interface fail, mark fail
 smb_pass_flag=0
 fio_speed_pass_flag=1
 disk_num_pass_flag=0
@@ -228,23 +228,33 @@ function report_ntb_log {
     let "cnt += 1"
     echo "cat ${prt_path}/lan/${dev}_${cnt}.log"
     echo "start"
-    cat ${prt_path}/lan/${dev}_${cnt}.log
+    #cat ${prt_path}/lan/${dev}_${cnt}.log
+    if [ -f "${prt_path}/lan/${dev}_${cnt}.log" ]; then
+        echo "exist"
+    else
+        break
+    fi
     echo "done"
-    ntb_sum=$(cat ${prt_path}/lan/${dev}_${cnt}.log | grep "SUM" | grep " 0.0-21600.0" |wc -l |awk '{print $1}')
+    ntb_sum=$(cat ${prt_path}/lan/${dev}_${cnt}.log | grep SUM | tail -n 1 | awk '{print $6}')
     if [ "$ntb_sum" = "0" ]; then
       return
     else
-      ntb_pass=$(cat ${prt_path}/lan/${dev}_${cnt}.log | grep "SUM" | grep " 0.0-21600.0" |grep ${thr} |wc -l |awk '{print $1}') 
-      if [ "$ntb_pass" = "$ntb_sum" ]; then
-        echo "NTB_iperf ${dev}_${cnt}...Pass - ${ntb_pass}${CL}" >> ${prt_path}/${OF}
-      else
-        echo "NTB_iperf ${dev}_${cnt}...Fail - run:${ntb_sum}, pass:${ntb_pass}${CL}" >> ${prt_path}/${OF}
-      fi
+
+         if [ "${ntb_sum}" -gt "${thr}" ]; then
+            echo "${ntb_sum} > ${thr}"
+            echo "Speed ${ntb_sum} Mb/s > ${thr} Mb/s, result:${net_pass_flag}${CL}"  >> ${prt_path}/${OF}
+        else
+            echo "${ntb_sum} < ${thr}"
+            echo "Speed ${ntb_sum} Mb/s < ${thr} Mb/s, result:${net_pass_flag}!!${CL}"  >> ${prt_path}/${OF}
+            net_pass_flag=0
+        fi
+ 
     fi
     (cat ${prt_path}/lan/${dev}_${cnt}.log | grep "SUM" | grep " 0.0-180.0" >> ${prt_path}/lan/${dev}_short_${cnt}.log)     
   done                   
   return
 }
+
 function report_net_log {
   cmd_id=$(/nas/util/qenc_cli get cbid | grep cbid)
   cb_id=${cmd_id:5:1}
@@ -290,32 +300,22 @@ function report_net_log {
     do
       #cnt=${net_log:5:1}
       echo "net log:${net_log}"
-      #net_sum=$(cat ${prt_path}/lan/${dev}_${cnt}.log | grep "SUM" | grep " 0.0-180.0" |wc -l |awk '{print $1}')
-      net_sum=$(cat ${net_log} | grep -B1 "DONE" | grep "SUM" |wc -l |awk '{print $1}')
+      net_sum=$(cat ${net_log} | grep SUM | tail -n 1 | awk '{print $6}')
       if [ "$net_sum" = "0" ]; then
         return
       else
-        #net_pass=$(cat ${prt_path}/lan/${dev}_${cnt}.log | grep "SUM" | grep " 0.0-180.0" |grep ${thr} |wc -l |awk '{print $1}')
-        net_pass=$(cat ${net_log} | grep -B1 "DONE" | grep "SUM" |grep ${thr} |wc -l |awk '{print $1}')
-        if [ "$net_pass" = "$net_sum" ]; then
-          echo "NET ${dev}_${cnt}...Pass - ${net_pass}${CL}" >> ${prt_path}/${OF}
-          let "total_run += net_sum"
-          let "total_pass += net_pass"
+
+        if [ "${net_sum}" -gt "${thr}" ]; then
+            echo "${net_sum} > ${thr}"
+            echo "Speed ${net_sum} Mb/s > ${thr} Mb/s, result:${net_pass_flag}${CL}"  >> ${prt_path}/${OF}
         else
-          echo "NET ${dev}_${cnt}...Fail - run:${net_sum}, pass:${net_pass}${CL}" >> ${prt_path}/${OF}
-          let "total_run += net_sum"
-          let "total_pass += net_pass"
+            echo "${net_sum} < ${thr}"
+            echo "Speed ${net_sum} Mb/s < ${thr} Mb/s, result:${net_pass_flag}!!${CL}"  >> ${prt_path}/${OF}
+            net_pass_flag=0
         fi
-        let "Ppass=total_pass*100/total_run"
-        if [ "$Ppass" -gt "60" ]; then
-          echo "${dev} pass"
-          net_pass_flag=1
-        else
-          net_pass_flag=0
-        fi
+
         #cat ${prt_path}/lan/${dev}_${cnt}.log | grep "SUM" | grep " 0.0-180.0" >> ${prt_path}/lan/${dev}_short_${cnt}.log
         cat ${net_log} | grep -B1 "DONE" | grep "SUM" >> ${prt_path}/lan/${dev}_short_${cnt}.log
-        echo "pass_flag:${net_pass_flag}${CL}"  >> ${prt_path}/${OF}
         let "cnt=cnt+1"
       fi
     done
@@ -587,14 +587,14 @@ function main {
   burnin_cp_log  
   report_vpd_log
   report_bbu_log
-  report_ntb_log ntb0 "[5-9][0-9][0-9][0-9] "
-  report_net_log ixl0 "[3-9][0-9][0-9][0-9] "
-  report_net_log ixl1 "[3-9][0-9][0-9][0-9] "
-  report_net_log ixl2 "[3-9][0-9][0-9][0-9] "
-  report_net_log ixl3 "[3-9][0-9][0-9][0-9] "
+  report_ntb_log ntb0 "10000"
+  report_net_log ixl0 "6000"
+  report_net_log ixl1 "6000"
+  report_net_log ixl2 "6000"
+  report_net_log ixl3 "6000"
   report_net_log igb0 ""
-  report_net_log igb1 "[3-9][0-9][0-9][0-9] "
-  report_net_log igb2 "[3-9][0-9][0-9][0-9] "
+  report_net_log igb1 "600"
+  report_net_log igb2 "600"
   report_smb_log vpd "-i fail"
   report_smb_log monitor "NOT_AVAILABLE"
   report_dd_speed

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IPERF_PATH="/tmp/burn/iperf"
+IPERF_PATH="/tmp/burn/iperf3"
 
 function main {
 
@@ -29,7 +29,7 @@ function main {
   # Start Iperf server #
   ######################
   echo "=====Start iperf server====="
-  ${IPERF_PATH} -s -w 320K &
+  ${IPERF_PATH} -s -i 60 &
   (sleep 5)
 
 }

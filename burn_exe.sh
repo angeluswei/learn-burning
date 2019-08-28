@@ -26,22 +26,11 @@ version="20190812"
 # Function
 ########################
 function save_pcie_link_speed {
-  ## Get NTB info
-  local ntb_pcie_info=$(/tmp/burn/lspci_fsd -s 03:00.0 -vvvv)
-
-  ## Get XL710 info
-  local xl710_pcie_info_0=$(/tmp/burn/lspci_fsd -s 05:00.0 -vvvv)
-  local xl710_pcie_info_1=$(/tmp/burn/lspci_fsd -s 05:00.1 -vvvv)
-  local xl710_pcie_info_2=$(/tmp/burn/lspci_fsd -s 05:00.2 -vvvv)
-  local xl710_pcie_info_3=$(/tmp/burn/lspci_fsd -s 05:00.3 -vvvv)
+  ## Get NTB Link Speed
+  local ntb_pcie_info=$(sysctl -n dev.ntb_hw.0.link_status)
 
   ## Save log
   echo "${ntb_pcie_info}" > /tmp/ntb_pcie_info.txt
-  echo "${xl710_pcie_info_0}" > /tmp/xl710_pcie_info_0.txt
-  echo "${xl710_pcie_info_1}" > /tmp/xl710_pcie_info_1.txt
-  echo "${xl710_pcie_info_2}" > /tmp/xl710_pcie_info_2.txt
-  echo "${xl710_pcie_info_3}" > /tmp/xl710_pcie_info_3.txt
-
 }
 
 function save_ntb_pcie_error_count {
