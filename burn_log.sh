@@ -221,20 +221,20 @@ function report_ntb_log {
     echo "NTB...Data Fail, total run:${ntb_info}, fail:${ntb_fail_num}${CL}" >> ${prt_path}/${OF}
     ntb_pass_flag=0
   fi
-  echo "pass_flag:${ntb_pass_flag}${CL}"  >> ${prt_path}/${OF}
+  echo "pass_flag:${ntb_pass_flag}${CL}" >> ${prt_path}/${OF}
 
+  ntb_pcie_info=$(sysctl -n dev.ntb_hw.0.link_status)
+  echo "NTB Link Speed: ${ntb_pcie_info}${CL}" >> ${prt_path}/${OF}
   while true
   do
     let "cnt += 1"
     echo "cat ${prt_path}/lan/${dev}_${cnt}.log"
-    echo "start"
     #cat ${prt_path}/lan/${dev}_${cnt}.log
     if [ -f "${prt_path}/lan/${dev}_${cnt}.log" ]; then
-        echo "exist"
+        echo "exist" > /dev/null
     else
         break
     fi
-    echo "done"
     ntb_sum=$(cat ${prt_path}/lan/${dev}_${cnt}.log | grep SUM | tail -n 1 | awk '{print $6}')
     if [ "$ntb_sum" = "0" ]; then
       return
@@ -309,9 +309,9 @@ function report_net_log {
             echo "${net_sum} > ${thr}"
             echo "Speed ${net_sum} Mb/s > ${thr} Mb/s, result:${net_pass_flag}${CL}"  >> ${prt_path}/${OF}
         else
+            net_pass_flag=0
             echo "${net_sum} < ${thr}"
             echo "Speed ${net_sum} Mb/s < ${thr} Mb/s, result:${net_pass_flag}!!${CL}"  >> ${prt_path}/${OF}
-            net_pass_flag=0
         fi
 
         #cat ${prt_path}/lan/${dev}_${cnt}.log | grep "SUM" | grep " 0.0-180.0" >> ${prt_path}/lan/${dev}_short_${cnt}.log
@@ -382,10 +382,8 @@ function report_smb_log {
     let "Pfail = total_fail*100/total_pass"
     echo "P:${Pfail}, total_fail:${total_fail}, total_pass:${total_pass}"
     if [ "$Pfail" -gt "5" ]; then
-      echo "fail"
       smb_pass_flag=0
     else
-      echo "pass"
       smb_pass_flag=1
     fi
 

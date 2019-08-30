@@ -20,7 +20,7 @@ enable_test_smb=1
 enable_test_net=1
 enable_test_usage=0
 enable_test_bbu=1
-version="20190812"
+version="20190830"
 
 ########################
 # Function

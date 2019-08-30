@@ -10,8 +10,8 @@ MAX_FAIL_COUNT=10
 IPERF_PATH="/tmp/burn/iperf3"
 IPERF_TIME=21600 #1day=86400s
 IPERF_INTERVAL=60
-#IPERF_TIME=3600 #1day=86400s
-#IPERF_INTERVAL=180
+#IPERF_TIME=30 #1day=86400s
+#IPERF_INTERVAL=10
 
 #################
 # Get target ID #
@@ -127,7 +127,7 @@ function main {
   do
     (echo "=====Burn ${net_name}=====")
     (date >> $net_log/${net_name}_$RUN.log)
-    (${IPERF_PATH} -c 192.168.${net_num}.$cb_id -i ${IPERF_INTERVAL} -t ${IPERF_TIME} -f m -P 3 >> $net_log/${net_name}_${RUN}.log )
+    (${IPERF_PATH} -c 192.168.${net_num}.$cb_id -i ${IPERF_INTERVAL} -t ${IPERF_TIME} -f m -P 3 -w 320k >> $net_log/${net_name}_${RUN}.log )
     echo "DONE" >> $net_log/${net_name}_${RUN}.log
     (sleep 1)
     let "RUN=RUN+1"

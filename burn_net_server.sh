@@ -29,7 +29,13 @@ function main {
   # Start Iperf server #
   ######################
   echo "=====Start iperf server====="
-  ${IPERF_PATH} -s -i 60 &
+  ${IPERF_PATH} -s -i 60 -B 192.168.0.2 &
+  ${IPERF_PATH} -s -i 60 -B 192.168.1.2 &
+  ${IPERF_PATH} -s -i 60 -B 192.168.2.2 &
+  ${IPERF_PATH} -s -i 60 -B 192.168.3.2 &
+  ${IPERF_PATH} -s -i 60 -B 192.168.4.2 &
+  ${IPERF_PATH} -s -i 60 -B 192.168.5.2 &
+  ${IPERF_PATH} -s -i 60 -B 192.168.6.2 &
   (sleep 5)
 
 }
